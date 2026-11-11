@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Postman - Ejecución Visual de Pruebas API REST</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: #212121;
+            color: #e0e0e0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .contenedor-postman {
+            width: 100%;
+            max-width: 980px;
+            background-color: #262626;
+            border-radius: 8px;
+            border: 1px solid #383838;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.5);
+            overflow: hidden;
+        }
+
+        /* Barra de Título Superior */
+        .barra-titulo {
+            background-color: #1e1e1e;
+            padding: 12px 18px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid #333333;
+        }
+
+        .logo-postman {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: bold;
+            font-size: 14px;
+            color: #ff6c37;
+        }
+
+        .logo-icono {
+            background-color: #ff6c37;
+            color: white;
+            font-weight: 900;
+            padding: 3px 8px;
+            border-radius: 50%;
+            font-size: 13px;
+        }
+
+        .coleccion-info {
+            font-size: 13px;
+            color: #9e9e9e;
+        }
+
+        /* Selector de Casos de Prueba */
+        .barra-casos {
+            background-color: #2a2a2a;
+            padding: 10px 15px;
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+            border-bottom: 1px solid #383838;
+        }
+
+        .boton-caso {
+            background-color: #333333;
+            color: #cccccc;
+            border: 1px solid #444444;
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-size: 12px;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.2s;
+        }
+
+        .boton-caso:hover {
+            background-color: #424242;
+            color: white;
+        }
+
+        .boton-caso.activo {
+            background-color: #ff6c37;
+            color: white;
+            border-color: #ff6c37;
+            font-weight: bold;
+        }
+
+        /* Barra de Petición HTTP */
+        .barra-request {
+            padding: 16px 20px;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            border-bottom: 1px solid #383838;
+            background-color: #1e1e1e;
+        }
+
+        .metodo-badge {
+            font-weight: bold;
+            font-size: 13px;
+            padding: 8px 14px;
+            border-radius: 4px;
+        }
+
+        .metodo-get {
+            background-color: rgba(10, 133, 255, 0.2);
+            color: #0b82ff;
+            border: 1px solid #0b82ff;
+        }
+
+        .metodo-post {
+            background-color: rgba(255, 170, 0, 0.2);
+            color: #ffa500;
+            border: 1px solid #ffa500;
+        }
+
+        .url-input {
+            flex-grow: 1;
+            background-color: #141414;
+            border: 1px solid #383838;
+            color: #f0f0f0;
+            padding: 9px 14px;
+            border-radius: 4px;
+            font-size: 13px;
+            font-family: monospace;
+        }
+
+        .btn-send {
+            background-color: #0b82ff;
+            color: white;
+            border: none;
+            padding: 9px 20px;
+            font-size: 13px;
+            font-weight: bold;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        /* Barra de Estado de Respuesta */
+        .barra-status {
+            padding: 12px 20px;
+            background-color: #212121;
+            display: flex;
+            gap: 25px;
+            font-size: 13px;
+            border-bottom: 1px solid #333333;
+        }
+
+        .status-badge {
+            font-weight: bold;
+        }
+
+        .status-200, .status-201 {
+            color: #4caf50;
+        }
+
+        .status-400, .status-404 {
+            color: #ff5252;
+        }
+
+        /* Pestañas de Resultados */
+        .pestanas {
+            display: flex;
+            background-color: #1e1e1e;
+            border-bottom: 1px solid #333333;
+        }
+
+        .pestana {
+            padding: 10px 20px;
+            font-size: 13px;
+            color: #9e9e9e;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+        }
+
+        .pestana.activa {
+            color: #ff6c37;
+            border-bottom-color: #ff6c37;
+            font-weight: bold;
+        }
+
+        /* Contenido de Respuesta */
+        .contenido-seccion {
+            padding: 20px;
+            min-height: 280px;
+            background-color: #181818;
+        }
+
+        pre {
+            background-color: #121212;
+            padding: 15px;
+            border-radius: 6px;
+            border: 1px solid #292929;
+            color: #d4d4d4;
+            font-size: 13px;
+            font-family: 'Consolas', 'Courier New', monospace;
+            overflow-x: auto;
+            line-height: 1.5;
+        }
+
+        .json-key { color: #9cdcfe; }
+        .json-string { color: #ce9178; }
+        .json-number { color: #b5cea8; }
+        .json-boolean { color: #569cd6; }
+
+        /* Lista de Tests Aprobados */
+        .lista-tests {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .item-test {
+            background-color: #212121;
+            padding: 10px 14px;
+            border-radius: 4px;
+            border-left: 4px solid #4caf50;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 13px;
+        }
+
+        .tag-pass {
+            background-color: #2e7d32;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 3px;
+            font-size: 11px;
+            font-weight: bold;
+        }
+
+        .footer-info {
+            padding: 10px 20px;
+            font-size: 12px;
+            color: #757575;
+            background-color: #1e1e1e;
+            text-align: right;
+            border-top: 1px solid #333333;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="contenedor-postman">
+        <!-- Encabezado de Postman -->
+        <div class="barra-titulo">
+            <div class="logo-postman">
+                <span class="logo-icono">P</span>
+                <span>Postman API Client</span>
+            </div>
+            <div class="coleccion-info">
+                Colección: <strong>Taller Automatización - Pruebas API REST</strong> (Reqres.in)
+            </div>
+        </div>
+
+        <!-- Selector Rápido de Casos -->
+        <div class="barra-casos" id="contenedor-botones-casos">
+            <button class="boton-caso activo" onclick="cargarCaso(0)">TC-API-01: Listar Usuarios (GET)</button>
+            <button class="boton-caso" onclick="cargarCaso(1)">TC-API-02: Usuario por ID (GET)</button>
+            <button class="boton-caso" onclick="cargarCaso(2)">TC-API-03: Usuario Inexistente 404 (GET)</button>
+            <button class="boton-caso" onclick="cargarCaso(3)">TC-API-04: Crear Usuario (POST)</button>
+            <button class="boton-caso" onclick="cargarCaso(4)">TC-API-05: Login Exitoso (POST)</button>
+            <button class="boton-caso" onclick="cargarCaso(5)">TC-API-06: Falta Password 400 (POST)</button>
+        </div>
+
+        <!-- Barra de Endpoint / Petición -->
+        <div class="barra-request">
+            <span id="badge-metodo" class="metodo-badge metodo-get">GET</span>
+            <input type="text" id="input-url" class="url-input" readonly value="https://reqres.in/api/users?page=2">
+            <button class="btn-send">Send</button>
+        </div>
+
+        <!-- Barra de Estado de la Respuesta -->
+        <div class="barra-status">
+            <div>Estado: <span id="val-status" class="status-badge status-200">200 OK</span></div>
+            <div>Tiempo: <span id="val-tiempo" style="color: #4caf50;">142 ms</span></div>
+            <div>Tamaño: <span id="val-tamano" style="color: #4caf50;">1.05 KB</span></div>
+        </div>
+
+        <!-- Pestañas de Body y Tests -->
+        <div class="pestanas">
+            <div id="tab-body" class="pestana activa" onclick="mostrarPestana('body')">Body (JSON)</div>
+            <div id="tab-tests" class="pestana" onclick="mostrarPestana('tests')">Test Results (<span id="conteo-tests">4/4</span> PASS)</div>
+        </div>
+
+        <!-- Vista de Contenido: Body JSON -->
+        <div id="panel-body" class="contenido-seccion">
+            <pre><code id="codigo-json"></code></pre>
+        </div>
+
+        <!-- Vista de Contenido: Pruebas JavaScript -->
+        <div id="panel-tests" class="contenido-seccion" style="display: none;">
+            <ul class="lista-tests" id="lista-aserciones"></ul>
+        </div>
+
+        <div class="footer-info">
+            Taller Universitario: Diseño de Scripts de Prueba Automatizados | Formato estándar Postman v2.1
+        </div>
+    </div>
+
+    <script>
+        const datosCasos = [
+            {
+                nombre: "TC-API-01: Listar Usuarios Paginados",
+                metodo: "GET",
+                url: "https://reqres.in/api/users?page=2",
+                status: "200 OK",
+                claseStatus: "status-200",
+                tiempo: "145 ms",
+                tamano: "1.05 KB",
+                json: {
+                    "page": 2,
+                    "per_page": 6,
+                    "total": 12,
+                    "total_pages": 2,
+                    "data": [
+                        { "id": 7, "email": "michael.lawson@reqres.in", "first_name": "Michael", "last_name": "Lawson", "avatar": "https://reqres.in/img/faces/7-image.jpg" },
+                        { "id": 8, "email": "lindsay.ferguson@reqres.in", "first_name": "Lindsay", "last_name": "Ferguson", "avatar": "https://reqres.in/img/faces/8-image.jpg" },
+                        { "id": 9, "email": "tobias.funke@reqres.in", "first_name": "Tobias", "last_name": "Funke", "avatar": "https://reqres.in/img/faces/9-image.jpg" }
+                    ],
+                    "support": { "url": "https://contentcaddy.io", "text": "Content Caddy" }
+                },
+                tests: [
+                    "PASS: Código de estado HTTP es 200 OK",
+                    "PASS: Tiempo de respuesta inferior a 2000 ms",
+                    "PASS: Cabecera Content-Type contiene application/json",
+                    "PASS: Respuesta contiene lista de usuarios con estructura correcta"
+                ]
+            },
+            {
+                nombre: "TC-API-02: Consultar Usuario por ID",
+                metodo: "GET",
+                url: "https://reqres.in/api/users/2",
+                status: "200 OK",
+                claseStatus: "status-200",
+                tiempo: "128 ms",
+                tamano: "280 B",
+                json: {
+                    "data": {
+                        "id": 2,
+                        "email": "janet.weaver@reqres.in",
+                        "first_name": "Janet",
+                        "last_name": "Weaver",
+                        "avatar": "https://reqres.in/img/faces/2-image.jpg"
+                    }
+                },
+                tests: [
+                    "PASS: Código de estado HTTP es 200 OK",
+                    "PASS: Retorna los datos del usuario con el ID consultado (id = 2)",
+                    "PASS: El correo electrónico contiene formato válido (@)"
+                ]
+            },
+            {
+                nombre: "TC-API-03: Consultar Usuario Inexistente",
+                metodo: "GET",
+                url: "https://reqres.in/api/users/23",
+                status: "404 Not Found",
+                claseStatus: "status-404",
+                tiempo: "160 ms",
+                tamano: "2 B",
+                json: {},
+                tests: [
+                    "PASS: Código de estado HTTP es 404 Not Found",
+                    "PASS: El cuerpo de respuesta devuelto es un objeto vacío {}"
+                ]
+            },
+            {
+                nombre: "TC-API-04: Crear Nuevo Usuario",
+                metodo: "POST",
+                url: "https://reqres.in/api/users",
+                status: "201 Created",
+                claseStatus: "status-201",
+                tiempo: "215 ms",
+                tamano: "185 B",
+                json: {
+                    "name": "Carlos Gomez",
+                    "job": "Ingeniero de Automatizacion QA",
+                    "id": "782",
+                    "createdAt": "2026-11-11T02:25:39.823Z"
+                },
+                tests: [
+                    "PASS: Código de estado HTTP es 201 Created",
+                    "PASS: Retorna ID generado y campos enviados correctamente",
+                    "PASS: Contiene marca de tiempo de creación 'createdAt'"
+                ]
+            },
+            {
+                nombre: "TC-API-05: Autenticación Exitosa",
+                metodo: "POST",
+                url: "https://reqres.in/api/login",
+                status: "200 OK",
+                claseStatus: "status-200",
+                tiempo: "190 ms",
+                tamano: "80 B",
+                json: {
+                    "token": "QpwL5tke4Pnpja7X4"
+                },
+                tests: [
+                    "PASS: Código de estado HTTP es 200 OK",
+                    "PASS: Token de autenticación generado correctamente y no vacío"
+                ]
+            },
+            {
+                nombre: "TC-API-06: Falta Contraseña en Login",
+                metodo: "POST",
+                url: "https://reqres.in/api/login",
+                status: "400 Bad Request",
+                claseStatus: "status-400",
+                tiempo: "155 ms",
+                tamano: "95 B",
+                json: {
+                    "error": "Missing password"
+                },
+                tests: [
+                    "PASS: Código de estado HTTP es 400 Bad Request",
+                    "PASS: Retorna mensaje de error descriptivo: 'Missing password'"
+                ]
+            }
+        ];
+
+        let indiceActual = 0;
+
+        function cargarCaso(indice) {
+            indiceActual = indice;
+            const caso = datosCasos[indice];
+
+            // Botones de navegación
+            const botones = document.querySelectorAll(".boton-caso");
+            botones.forEach((btn, idx) => {
+                btn.className = idx === indice ? "boton-caso activo" : "boton-caso";
+            });
+
+            // Metodo y URL
+            const badgeMetodo = document.getElementById("badge-metodo");
+            badgeMetodo.textContent = caso.metodo;
+            badgeMetodo.className = "metodo-badge metodo-" + caso.metodo.toLowerCase();
+
+            document.getElementById("input-url").value = caso.url;
+
+            // Status, tiempo, tamaño
+            const valStatus = document.getElementById("val-status");
+            valStatus.textContent = caso.status;
+            valStatus.className = "status-badge " + caso.claseStatus;
+
+            document.getElementById("val-tiempo").textContent = caso.tiempo;
+            document.getElementById("val-tamano").textContent = caso.tamano;
+
+            // JSON coloreado
+            document.getElementById("codigo-json").innerHTML = formatearJsonColoreado(caso.json);
+
+            // Tests
+            document.getElementById("conteo-tests").textContent = caso.tests.length + "/" + caso.tests.length;
+            const listaTests = document.getElementById("lista-aserciones");
+            listaTests.innerHTML = "";
+            caso.tests.forEach(testTexto => {
+                const li = document.createElement("li");
+                li.className = "item-test";
+                li.innerHTML = '<span class="tag-pass">PASS</span> <span>' + testTexto.replace("PASS: ", "") + '</span>';
+                listaTests.appendChild(li);
+            });
+        }
+
+        function mostrarPestana(tipo) {
+            const tabBody = document.getElementById("tab-body");
+            const tabTests = document.getElementById("tab-tests");
+            const panelBody = document.getElementById("panel-body");
+            const panelTests = document.getElementById("panel-tests");
+
+            if (tipo === "body") {
+                tabBody.className = "pestana activa";
+                tabTests.className = "pestana";
+                panelBody.style.display = "block";
+                panelTests.style.display = "none";
+            } else {
+                tabBody.className = "pestana";
+                tabTests.className = "pestana activa";
+                panelBody.style.display = "none";
+                panelTests.style.display = "block";
+            }
+        }
+
+        function formatearJsonColoreado(objeto) {
+            const str = JSON.stringify(objeto, null, 4);
+            return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+                .replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, function (match) {
+                    let cls = 'json-number';
+                    if (/^"/.test(match)) {
+                        if (/:$/.test(match)) {
+                            cls = 'json-key';
+                        } else {
+                            cls = 'json-string';
+                        }
+                    } else if (/true|false/.test(match)) {
+                        cls = 'json-boolean';
+                    }
+                    return '<span class="' + cls + '">' + match + '</span>';
+                });
+        }
+
+        // Cargar caso inicial
+        cargarCaso(0);
+    </script>
+</body>
+</html>

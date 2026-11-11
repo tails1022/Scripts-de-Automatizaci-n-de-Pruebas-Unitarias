@@ -1,0 +1,30 @@
+# Entorno virtual y dependencias
+venv/
+ENV/
+env/
+
+# Caché de Python y Pytest
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+
+# Evidencias y capturas de pantalla (solicitado explícitamente no subir)
+evidencias/
+*.png
+*.jpg
+*.jpeg
+*.gif
+capturar_postman.py
+
+# Documentos e informes (solicitado explícitamente no subir)
+*.docx
+*.doc
+*.pdf
+DOCUMENTACION_TECNICA.md
+INFORME_*.docx
+generar_informe_word.py
+
+# Archivos del sistema
+.DS_Store
+Thumbs.db

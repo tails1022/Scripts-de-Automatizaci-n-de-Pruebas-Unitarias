@@ -1,0 +1,244 @@
+{
+  "info": {
+    "_postman_id": "a918e6e1-92b3-4f51-b842-832f913d03b9",
+    "name": "Taller Automatización - Pruebas API REST",
+    "description": "Colección de pruebas automatizadas para puntos de enlace (endpoints) REST de Reqres.in. Incluye aserciones de código de estado, tiempo de respuesta, validación de esquemas JSON y control de errores.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "TC-API-01: Consultar Lista de Usuarios (GET)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Código de estado HTTP es 200 OK\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "",
+              "pm.test(\"Tiempo de respuesta inferior a 2000 ms\", function () {",
+              "    pm.expect(pm.response.responseTime).to.be.below(2000);",
+              "});",
+              "",
+              "pm.test(\"Cabecera Content-Type contiene application/json\", function () {",
+              "    pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");",
+              "});",
+              "",
+              "pm.test(\"Respuesta contiene lista de usuarios con estructura correcta\", function () {",
+              "    var datosJson = pm.response.json();",
+              "    pm.expect(datosJson.page).to.eql(2);",
+              "    pm.expect(datosJson.data).to.be.an(\"array\").that.is.not.empty;",
+              "    pm.expect(datosJson.data[0]).to.have.all.keys(\"id\", \"email\", \"first_name\", \"last_name\", \"avatar\");",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "https://reqres.in/api/users?page=2",
+          "protocol": "https",
+          "host": ["reqres", "in"],
+          "path": ["api", "users"],
+          "query": [
+            {
+              "key": "page",
+              "value": "2"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "TC-API-02: Consultar Usuario por ID (GET)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Código de estado HTTP es 200 OK\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "",
+              "pm.test(\"Retorna los datos del usuario con el ID consultado\", function () {",
+              "    var datosJson = pm.response.json();",
+              "    pm.expect(datosJson.data.id).to.eql(2);",
+              "    pm.expect(datosJson.data.email).to.include(\"@\");",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "https://reqres.in/api/users/2",
+          "protocol": "https",
+          "host": ["reqres", "in"],
+          "path": ["api", "users", "2"]
+        }
+      }
+    },
+    {
+      "name": "TC-API-03: Consultar Usuario Inexistente - Error 404 (GET)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Código de estado HTTP es 404 Not Found\", function () {",
+              "    pm.response.to.have.status(404);",
+              "});",
+              "",
+              "pm.test(\"Cuerpo de respuesta está vacío\", function () {",
+              "    var datosJson = pm.response.json();",
+              "    pm.expect(datosJson).to.be.empty;",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "https://reqres.in/api/users/23",
+          "protocol": "https",
+          "host": ["reqres", "in"],
+          "path": ["api", "users", "23"]
+        }
+      }
+    },
+    {
+      "name": "TC-API-04: Crear Nuevo Usuario (POST)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Código de estado HTTP es 201 Created\", function () {",
+              "    pm.response.to.have.status(201);",
+              "});",
+              "",
+              "pm.test(\"Retorna ID generado y campos enviados correctamente\", function () {",
+              "    var datosJson = pm.response.json();",
+              "    pm.expect(datosJson.name).to.eql(\"Carlos Gomez\");",
+              "    pm.expect(datosJson.job).to.eql(\"QA Automation Engineer\");",
+              "    pm.expect(datosJson).to.have.property(\"id\");",
+              "    pm.expect(datosJson).to.have.property(\"createdAt\");",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"name\": \"Carlos Gomez\",\n    \"job\": \"QA Automation Engineer\"\n}"
+        },
+        "url": {
+          "raw": "https://reqres.in/api/users",
+          "protocol": "https",
+          "host": ["reqres", "in"],
+          "path": ["api", "users"]
+        }
+      }
+    },
+    {
+      "name": "TC-API-05: Autenticación Exitosa (POST)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Código de estado HTTP es 200 OK\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "",
+              "pm.test(\"Token de autenticación generado correctamente\", function () {",
+              "    var datosJson = pm.response.json();",
+              "    pm.expect(datosJson).to.have.property(\"token\");",
+              "    pm.expect(datosJson.token).to.be.a(\"string\").that.is.not.empty;",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"email\": \"eve.holt@reqres.in\",\n    \"password\": \"cityslicka\"\n}"
+        },
+        "url": {
+          "raw": "https://reqres.in/api/login",
+          "protocol": "https",
+          "host": ["reqres", "in"],
+          "path": ["api", "login"]
+        }
+      }
+    },
+    {
+      "name": "TC-API-06: Autenticación Fallida - Sin Contraseña (POST)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Código de estado HTTP es 400 Bad Request\", function () {",
+              "    pm.response.to.have.status(400);",
+              "});",
+              "",
+              "pm.test(\"Retorna mensaje de error descriptivo indicando falta de contraseña\", function () {",
+              "    var datosJson = pm.response.json();",
+              "    pm.expect(datosJson.error).to.eql(\"Missing password\");",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"email\": \"sydney@fife\"\n}"
+        },
+        "url": {
+          "raw": "https://reqres.in/api/login",
+          "protocol": "https",
+          "host": ["reqres", "in"],
+          "path": ["api", "login"]
+        }
+      }
+    }
+  ]
+}

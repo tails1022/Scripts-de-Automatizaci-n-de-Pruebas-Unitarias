@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portal Universitario - Autenticación de Usuarios</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .contenedor {
+            background: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            width: 100%;
+            max-width: 480px;
+            overflow: hidden;
+        }
+
+        .encabezado {
+            background-color: #0d47a1;
+            color: #ffffff;
+            padding: 24px;
+            text-align: center;
+        }
+
+        .encabezado h1 {
+            font-size: 22px;
+            margin-bottom: 6px;
+        }
+
+        .encabezado p {
+            font-size: 14px;
+            color: #bbdefb;
+        }
+
+        .cuerpo {
+            padding: 30px;
+        }
+
+        .grupo-formulario {
+            margin-bottom: 20px;
+        }
+
+        .grupo-formulario label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333333;
+            font-size: 14px;
+        }
+
+        .grupo-formulario input {
+            width: 100%;
+            padding: 12px 14px;
+            border: 1px solid #cccccc;
+            border-radius: 6px;
+            font-size: 15px;
+            transition: border-color 0.2s;
+        }
+
+        .grupo-formulario input:focus {
+            outline: none;
+            border-color: #1976d2;
+            box-shadow: 0 0 0 3px rgba(25, 118, 210, 0.15);
+        }
+
+        .alerta {
+            padding: 14px 16px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            display: none;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .alerta-exito {
+            background-color: #e8f5e9;
+            color: #2e7d32;
+            border: 1px solid #c8e6c9;
+        }
+
+        .alerta-error {
+            background-color: #ffebee;
+            color: #c62828;
+            border: 1px solid #ffcdd2;
+        }
+
+        .alerta-info {
+            background-color: #e3f2fd;
+            color: #1565c0;
+            border: 1px solid #bbdefb;
+        }
+
+        .boton {
+            width: 100%;
+            padding: 13px;
+            background-color: #1976d2;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.2s, transform 0.1s;
+        }
+
+        .boton:hover {
+            background-color: #1565c0;
+        }
+
+        .boton:active {
+            transform: scale(0.99);
+        }
+
+        .boton-peligro {
+            background-color: #d32f2f;
+        }
+
+        .boton-peligro:hover {
+            background-color: #b71c1c;
+        }
+
+        .area-segura {
+            display: none;
+            text-align: center;
+        }
+
+        .tarjeta-usuario {
+            background-color: #f5f5f5;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            text-align: left;
+        }
+
+        .tarjeta-usuario p {
+            margin: 8px 0;
+            font-size: 14px;
+            color: #424242;
+        }
+
+        .tarjeta-usuario strong {
+            color: #1565c0;
+        }
+
+        .credenciales-demo {
+            margin-top: 24px;
+            padding: 12px;
+            background-color: #f9f9f9;
+            border: 1px dashed #bdbdbd;
+            border-radius: 6px;
+            font-size: 12px;
+            color: #616161;
+        }
+
+        .credenciales-demo h4 {
+            margin-bottom: 6px;
+            color: #424242;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="contenedor">
+        <!-- Encabezado Institucional -->
+        <div class="encabezado">
+            <h1>Sistema Académico Universitario</h1>
+            <p>Módulo de Control de Acceso y Autenticación</p>
+        </div>
+
+        <div class="cuerpo">
+            <!-- Mensaje de Notificación o Alerta -->
+            <div id="mensaje-alerta" class="alerta"></div>
+
+            <!-- Formulario de Inicio de Sesión -->
+            <form id="formulario-login">
+                <div class="grupo-formulario">
+                    <label for="campo-usuario">Nombre de Usuario:</label>
+                    <input type="text" id="campo-usuario" name="usuario" placeholder="Ingrese su usuario (ej: estudiante)">
+                </div>
+
+                <div class="grupo-formulario">
+                    <label for="campo-contrasena">Contraseña:</label>
+                    <input type="password" id="campo-contrasena" name="contrasena" placeholder="Ingrese su contraseña">
+                </div>
+
+                <button type="submit" id="boton-iniciar-sesion" class="boton">Iniciar Sesión</button>
+
+                <div class="credenciales-demo">
+                    <h4>Credenciales de Prueba:</h4>
+                    <p><strong>Usuario Válido:</strong> estudiante</p>
+                    <p><strong>Contraseña Válida:</strong> ClaveSegura2026!</p>
+                </div>
+            </form>
+
+            <!-- Área Segura (Visible tras inicio de sesión exitoso) -->
+            <div id="seccion-area-segura" class="area-segura">
+                <h2 style="color: #2e7d32; margin-bottom: 10px;">¡Bienvenido al Área Segura!</h2>
+                <p style="color: #555555; font-size: 15px;">Has iniciado sesión satisfactoriamente en la plataforma.</p>
+
+                <div class="tarjeta-usuario">
+                    <p><strong>Usuario Activo:</strong> <span id="nombre-usuario-activo">estudiante</span></p>
+                    <p><strong>Rol:</strong> Estudiante de Pregrado</p>
+                    <p><strong>Programa:</strong> Ingeniería de Sistemas / Software</p>
+                    <p><strong>Estado:</strong> Matrícula Activa</p>
+                </div>
+
+                <button type="button" id="boton-cerrar-sesion" class="boton boton-peligro">Cerrar Sesión</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const USUARIO_CORRECTO = "estudiante";
+        const CONTRASENA_CORRECTA = "ClaveSegura2026!";
+
+        const formulario = document.getElementById("formulario-login");
+        const campoUsuario = document.getElementById("campo-usuario");
+        const campoContrasena = document.getElementById("campo-contrasena");
+        const alerta = document.getElementById("mensaje-alerta");
+        const areaSegura = document.getElementById("seccion-area-segura");
+        const btnCerrarSesion = document.getElementById("boton-cerrar-sesion");
+        const nombreUsuarioActivo = document.getElementById("nombre-usuario-activo");
+
+        function mostrarAlerta(mensaje, tipo) {
+            alerta.textContent = mensaje;
+            alerta.className = "alerta alerta-" + tipo;
+            alerta.style.display = "block";
+        }
+
+        function ocultarAlerta() {
+            alerta.style.display = "none";
+        }
+
+        formulario.addEventListener("submit", function(evento) {
+            evento.preventDefault();
+            const usuario = campoUsuario.value.trim();
+            const contrasena = campoContrasena.value.trim();
+
+            if (!usuario || !contrasena) {
+                mostrarAlerta("¡Error! Por favor complete todos los campos obligatorios.", "error");
+                return;
+            }
+
+            if (usuario !== USUARIO_CORRECTO) {
+                mostrarAlerta("¡Error de autenticación! El usuario ingresado no existe en el sistema.", "error");
+                return;
+            }
+
+            if (contrasena !== CONTRASENA_CORRECTA) {
+                mostrarAlerta("¡Error de autenticación! La contraseña ingresada es incorrecta.", "error");
+                return;
+            }
+
+            // Inicio de sesión exitoso
+            formulario.style.display = "none";
+            areaSegura.style.display = "block";
+            nombreUsuarioActivo.textContent = usuario;
+            mostrarAlerta("¡Inicio de sesión exitoso! Bienvenido al área segura del sistema universitario.", "exito");
+        });
+
+        btnCerrarSesion.addEventListener("click", function() {
+            areaSegura.style.display = "none";
+            formulario.style.display = "block";
+            campoUsuario.value = "";
+            campoContrasena.value = "";
+            mostrarAlerta("Has cerrado sesión exitosamente del área segura.", "info");
+        });
+    </script>
+</body>
+</html>
